@@ -11,11 +11,13 @@ from forms import UserAddForm
 
 client = boto3.client(
     's3',
+    # "us-east-1",
     aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY']
+    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
 )
 
 s3 = boto3.resource('s3')
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -23,7 +25,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
-app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 toolbar = DebugToolbarExtension(app)
 
@@ -56,12 +57,16 @@ def form():
 def pic():
     """ Testing
     """
-
+    s3 = boto3.client('s3')
     print(request.form)
     pic = request.form["image"]
     print("WHAT WE WANT!!!!!",pic)
-
-    data = open(pic, 'rb')
-    s3.Bucket('kv-friender'.put_object(Key=pic, Body=data))
+    file_path = os.path.abspath(pic)
+    # data = open(pic, 'rb')
+    # print('I am the data', data)
+    # if put object doesnt work, use .upload_fileobj
+    # s3.Bucket(os.environ['BUCKET']).upload_fileobj(pic, 'new_file_name')
+    # TODO: change pic1 to be the username from form
+    s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
 
     return render_template('pic.html')
