@@ -61,12 +61,13 @@ def pic():
     print(request.form)
     pic = request.form["image"]
     print("WHAT WE WANT!!!!!",pic)
-    file_path = os.path.abspath(pic)
+    # file_path = os.path.abspath(pic)
     # data = open(pic, 'rb')
     # print('I am the data', data)
     # if put object doesnt work, use .upload_fileobj
-    # s3.Bucket(os.environ['BUCKET']).upload_fileobj(pic, 'new_file_name')
+    with open(pic, 'rb') as data:
+        s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
     # TODO: change pic1 to be the username from form
-    s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
+    # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
 
     return render_template('pic.html')
