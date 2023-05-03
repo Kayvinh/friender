@@ -1,5 +1,5 @@
 from app import app
-from models import User, db, Like
+from models import User, db, Yes_Like, No_Like
 
 
 db.drop_all()
@@ -113,7 +113,9 @@ except:
     db.session.rollback()
 # Like section
 
-like1 = Like(curr_user_liked="johndoe", like_curr_user="janedoe")
+like1 = Yes_Like(curr_user="johndoe", people_who_liked_you="janedoe")
+like2 = Yes_Like(curr_user="janedoe", people_who_liked_you="johndoe")
+like3 = Yes_Like(curr_user="johndoe", people_who_liked_you="amandasmith")
 
-db.session.add(like1)
+db.session.add_all([like1, like2, like3])
 db.session.commit()

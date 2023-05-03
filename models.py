@@ -2,48 +2,96 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from datetime import datetime
+
 DEFAULT_IMG = "https://www.shutterstock.com/image-vector/clown-emoji-face-vector-600w-1306928644.jpg"
 
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
-# class Match(db.Model):
-#     """"""
-#     __tablename__ = 'matches'
+class Match(db.Model):
+    """"""
+    __tablename__ = 'matches'
 
-#     id = db.Column(
-#         db.Integer,
-#         autoincrement=True,
-#         primary_key=True
-#     )
+    id = db.Column(
+        db.Integer,
+        autoincrement=True,
+        primary_key=True
+    )
 
-#     username = db
+    username1 = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+    )
 
-class Like(db.Model):
+    username2 = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+    )
+
+    time_matched = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+    )
+
+    is_curr_match = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True,
+    )
+
+
+class Yes_Like(db.Model):
     """Connection of a liker <-> liked user."""
 
-    __tablename__ = 'likes'
+    __tablename__ = 'yes_likes'
 
+    id = db.Column(
+        db.Integer,
+        autoincrement=True,
+        primary_key=True,
+    )
+    # TODO: user
+    curr_user = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+    )
+    # TODO: change in future when brains bigger
+    people_who_liked_you = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+    )
+
+    def is_match(self, other_user):
+        """ Returns Boolean for match """
+        found_user_list = [
+            user for user in self.likes if user == other_user]
+        return len(found_user_list) == 1
+
+
+class No_Like(db.Model):
+    """Connection of a liker <-> liked user."""
+
+    __tablename__ = 'No_likes'
+
+    id = db.Column(
+        db.Integer,
+        autoincrement=True,
+        primary_key=True,
+    )
+    # TODO: user
     curr_user = db.Column(
         db.Text,
         db.ForeignKey('users.username', ondelete="cascade"),
         primary_key=True,
     )
 
-    people_who_liked_you = db.Column(
-        db.Text,
-        db.ForeignKey('users.username', ondelete="cascade"),
-    )
-
     people_who_said_no = db.Column(
         db.Text,
         db.ForeignKey('users.username', ondelete="cascade"),
     )
-
-    def is_match(self):
-        """ Returns Boolean for match """
-
 
 
 class User(db.Model):
@@ -94,20 +142,21 @@ class User(db.Model):
         nullable=False,
     )
 
-    def potential_friends(self):
+    # def potential_friends(self):
         # get usernames of people were already friends with
         # filter people we've seen, radius
 
         # return that list
 
 
-    # matches = db.relationship(
-    #     "User",
-    #     secondary="matches",
-    #     primaryjoin=(Like.curr_user_liked == username),
-    #     secondaryjoin=(Like.like_curr_user == username),
-    #     backref="matching",
-    # )
+    likes = db.relationship(
+        "Yes_Like",
+        # secondary="yes_likes",
+        primaryjoin=(Yes_Like.people_who_liked_you == username),
+        backref="user",
+    )
+    def __repr__(self):
+        return f"<User: {self.username}, {self.email}, {self.likes}>"
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):
