@@ -25,23 +25,24 @@ class Like(db.Model):
 
     __tablename__ = 'likes'
 
-# people you have liked
-    curr_user_liked = db.Column(
-        db.Text,
-        db.ForeignKey('users.username', ondelete="cascade"),
-        primary_key=True,
-    )
-# people who have liked you
-    like_curr_user = db.Column(
+    curr_user = db.Column(
         db.Text,
         db.ForeignKey('users.username', ondelete="cascade"),
         primary_key=True,
     )
 
-    is_match = db.Column(
-        db.Boolean,
-        nullable=False
+    people_who_liked_you = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
     )
+
+    people_who_said_no = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+    )
+
+    def is_match(self):
+        """ Returns Boolean for match """
 
 
 
@@ -93,13 +94,20 @@ class User(db.Model):
         nullable=False,
     )
 
-    matches = db.relationship(
-        "User",
-        secondary="matches",
-        primaryjoin=(Like.user_being_liked == username),
-        secondaryjoin=(Like.user_liking == username),
-        backref="matching",
-    )
+    def potential_friends(self):
+        # get usernames of people were already friends with
+        # filter people we've seen, radius
+
+        # return that list
+
+
+    # matches = db.relationship(
+    #     "User",
+    #     secondary="matches",
+    #     primaryjoin=(Like.curr_user_liked == username),
+    #     secondaryjoin=(Like.like_curr_user == username),
+    #     backref="matching",
+    # )
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):

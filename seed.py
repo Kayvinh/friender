@@ -1,6 +1,5 @@
-from csv import DictReader
-from app import db
-from models import User, Match, Like
+from app import app
+from models import User, db, Like
 
 
 db.drop_all()
@@ -13,7 +12,7 @@ user1 = User(
     image='https://example.com/images/johndoe.png',
     hobbies='reading, hiking',
     interests='history, science',
-    radius=10,
+    friend_radius=10,
     zip='12345',
 )
 user2 = User(
@@ -23,7 +22,7 @@ user2 = User(
     image='https://example.com/images/janedoe.png',
     hobbies='swimming, traveling',
     interests='photography, art',
-    radius=20,
+    friend_radius=20,
     zip='54321',
 )
 user3 = User(
@@ -33,7 +32,7 @@ user3 = User(
     image='https://example.com/images/bobsmith.png',
     hobbies='fishing, playing guitar',
     interests='music, technology',
-    radius=15,
+    friend_radius=15,
     zip='67890',
 )
 user4 = User(
@@ -43,7 +42,7 @@ user4 = User(
     image='https://example.com/images/sarahjones.png',
     hobbies='yoga, cooking',
     interests='health, nutrition',
-    radius=25,
+    friend_radius=25,
     zip='09876',
 )
 user5 = User(
@@ -53,7 +52,7 @@ user5 = User(
     image='https://example.com/images/miketurner.png',
     hobbies='running, playing basketball',
     interests='sports, movies',
-    radius=30,
+    friend_radius=30,
     zip='43210',
 )
 user6 = User(
@@ -63,7 +62,7 @@ user6 = User(
     image='https://example.com/images/lisasmith.png',
     hobbies='knitting, gardening',
     interests='crafts, nature',
-    radius=10,
+    friend_radius=10,
     zip='13579',
 )
 user7 = User(
@@ -73,7 +72,7 @@ user7 = User(
     image='https://example.com/images/tomwilson.png',
     hobbies='playing video games, watching TV',
     interests='technology, science fiction',
-    radius=20,
+    friend_radius=20,
     zip='24680',
 )
 user8 = User(
@@ -83,7 +82,7 @@ user8 = User(
     image='https://example.com/images/katejackson.png',
     hobbies='skiing, snowboarding',
     interests='traveling, languages',
-    radius=30,
+    friend_radius=30,
     zip='97531',
 )
 user9 = User(
@@ -93,7 +92,7 @@ user9 = User(
     image='https://example.com/images/danmiller.png',
     hobbies='playing guitar, writing',
     interests='music, literature',
-    radius=15,
+    friend_radius=15,
     zip='86420',
 )
 user10 = User(
@@ -103,9 +102,18 @@ user10 = User(
     image='https://example.com/images/amandasmith.png',
     hobbies='dancing, painting',
     interests='art, history',
-    radius=25,
+    friend_radius=25,
     zip='73190',
 )
 
 db.session.add_all([user1, user2, user3, user4, user5, user6, user7, user8, user9, user10])
+try:
+    db.session.commit()
+except:
+    db.session.rollback()
+# Like section
+
+like1 = Like(curr_user_liked="johndoe", like_curr_user="janedoe")
+
+db.session.add(like1)
 db.session.commit()

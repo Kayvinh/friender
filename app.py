@@ -7,19 +7,18 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-from models import db, connect_db, User, Like, Match
+from models import connect_db, User, Like
 from forms import SignUpForm
 
-client = boto3.client(
-    's3',
-    # "us-east-1",
-    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-)
 
 s3 = boto3.resource('s3')
 
 load_dotenv()
+client = boto3.client(
+    's3',
+    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+)
 
 app = Flask(__name__)
 
@@ -51,12 +50,7 @@ def pic():
     print(request.form)
     pic = request.form["image"]
     print("WHAT WE WANT!!!!!",pic)
-    # file_path = os.path.abspath(pic)
-    # data = open(pic, 'rb')
-    # print('I am the data', data)
-    # if put object doesnt work, use .upload_fileobj
-    # TODO: change pic1 to be the username from form
-    # TODO: request.files()
+
 
     # with open(pic, 'rb') as data:
     #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
