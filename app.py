@@ -65,9 +65,9 @@ def pic():
     # data = open(pic, 'rb')
     # print('I am the data', data)
     # if put object doesnt work, use .upload_fileobj
+    # TODO: change pic1 to be the username from form
     with open(pic, 'rb') as data:
         s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
-    # TODO: change pic1 to be the username from form
     # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
 
     return render_template('pic.html')
