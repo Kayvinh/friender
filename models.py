@@ -157,12 +157,14 @@ class User(db.Model):
         """ Returns Boolean for match """
         # found_user_list = [
         #     user for user in self.likes if user == other_user]
-        yes_likes = Yes_Like.query.filter_by(people_who_liked_you=other_user).first()
-
-        if(yes_likes):
-            return True
+        # yes_likes = Yes_Like.query.filter_by(people_who_liked_you=other_user).first()
+        # print(yes_likes)
+        print("self username:", self.username)
+        print("checking")
         
-        return False
+        found_user_list = [
+            user for user in self.likes if user == other_user]
+        return len(found_user_list) == 1
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):
