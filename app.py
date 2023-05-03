@@ -1,4 +1,5 @@
 import os
+import io
 import boto3
 from dotenv import load_dotenv
 
@@ -55,8 +56,13 @@ def pic():
     # print('I am the data', data)
     # if put object doesnt work, use .upload_fileobj
     # TODO: change pic1 to be the username from form
-    with open(pic, 'rb') as data:
-        s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
+    # TODO: request.files()
+
+    # with open(pic, 'rb') as data:
+    #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
     # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
+    pic_bytes = io.BytesIO(b'pic')
+    s3.upload_fileobj(pic_bytes, os.environ['BUCKET'], 'pic2' )
 
     return render_template('pic.html')
+
