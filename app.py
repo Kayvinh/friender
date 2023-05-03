@@ -7,7 +7,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 
-from forms import UserAddForm
+from forms import SignUpForm
 
 client = boto3.client(
     's3',
@@ -36,18 +36,7 @@ def form():
     """ Testing
     """
 
-    # print("requestFORMS!!!",request.forms)
-
-    # if(not (request.forms)):
-    # data = request.forms
-    # print("DATA!!!", data)
-
-# us-west-2
-
-#     https://kv-friender.s3.us-east-1.amazonaws.com/puppy.jpg
-
-# bucket s3://kv-friender/userImg/
-    form = UserAddForm()
+    form = SignUpForm()
     for bucket in s3.buckets.all():
         print(bucket.name)
 

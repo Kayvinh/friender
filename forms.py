@@ -8,37 +8,37 @@ class SignUpForm(FlaskForm):
 
     username = StringField(
         'username',
-        validators=[Length(min=6)],
+        # validators=[Length(min=6)],
     )
 
     email = StringField(
         'e-mail',
-        validators=[DataRequired(), Email()],
+        # validators=[DataRequired(), Email()],
     )
 
     password = PasswordField(
         'password',
-        validators=[Length(min=6)],
+        # validators=[Length(min=6)],
     )
 
     hobbies = TextAreaField(
         'hobbies',
-        validators=[Length(min=6), Length(max=1000)],
+        # validators=[Length(min=6), Length(max=1000)],
     )
 
     interests = TextAreaField(
         'interests',
-        validators=[Length(min=6), Length(max=2000)],
+        # validators=[Length(min=6), Length(max=2000)],
     )
 
     zip = StringField(
         'zipcode',
-        validators=[DataRequired()],
+        # validators=[DataRequired()],
     )
 
     radius = SelectField(
         'radius',
-        validators=[DataRequired()],
+        # validators=[DataRequired()],
     )
 
     #TODO: validate file field if pic, not txt
