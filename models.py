@@ -64,11 +64,6 @@ class Yes_Like(db.Model):
         db.ForeignKey('users.username', ondelete="cascade"),
     )
 
-    def is_match(self, other_user):
-        """ Returns Boolean for match """
-        found_user_list = [
-            user for user in self.likes if user == other_user]
-        return len(found_user_list) == 1
 
 
 class No_Like(db.Model):
@@ -151,12 +146,23 @@ class User(db.Model):
 
     likes = db.relationship(
         "Yes_Like",
-        # secondary="yes_likes",
         primaryjoin=(Yes_Like.people_who_liked_you == username),
         backref="user",
     )
+
     def __repr__(self):
         return f"<User: {self.username}, {self.email}, {self.likes}>"
+    
+    def is_match(self, other_user):
+        """ Returns Boolean for match """
+        # found_user_list = [
+        #     user for user in self.likes if user == other_user]
+        yes_likes = Yes_Like.query.filter_by(people_who_liked_you=other_user).first()
+
+        if(yes_likes):
+            return True
+        
+        return False
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):
