@@ -1,0 +1,111 @@
+from csv import DictReader
+from app import db
+from models import User, Match, Like
+
+
+db.drop_all()
+db.create_all()
+
+user1 = User(
+    username='johndoe',
+    password='password1',
+    email='johndoe@gmail.com',
+    image='https://example.com/images/johndoe.png',
+    hobbies='reading, hiking',
+    interests='history, science',
+    radius=10,
+    zip='12345',
+)
+user2 = User(
+    username='janedoe',
+    password='password2',
+    email='janedoe@gmail.com',
+    image='https://example.com/images/janedoe.png',
+    hobbies='swimming, traveling',
+    interests='photography, art',
+    radius=20,
+    zip='54321',
+)
+user3 = User(
+    username='bobsmith',
+    password='password3',
+    email='bobsmith@gmail.com',
+    image='https://example.com/images/bobsmith.png',
+    hobbies='fishing, playing guitar',
+    interests='music, technology',
+    radius=15,
+    zip='67890',
+)
+user4 = User(
+    username='sarahjones',
+    password='password4',
+    email='sarahjones@gmail.com',
+    image='https://example.com/images/sarahjones.png',
+    hobbies='yoga, cooking',
+    interests='health, nutrition',
+    radius=25,
+    zip='09876',
+)
+user5 = User(
+    username='miketurner',
+    password='password5',
+    email='miketurner@gmail.com',
+    image='https://example.com/images/miketurner.png',
+    hobbies='running, playing basketball',
+    interests='sports, movies',
+    radius=30,
+    zip='43210',
+)
+user6 = User(
+    username='lisasmith',
+    password='password6',
+    email='lisasmith@gmail.com',
+    image='https://example.com/images/lisasmith.png',
+    hobbies='knitting, gardening',
+    interests='crafts, nature',
+    radius=10,
+    zip='13579',
+)
+user7 = User(
+    username='tomwilson',
+    password='password7',
+    email='tomwilson@gmail.com',
+    image='https://example.com/images/tomwilson.png',
+    hobbies='playing video games, watching TV',
+    interests='technology, science fiction',
+    radius=20,
+    zip='24680',
+)
+user8 = User(
+    username='katejackson',
+    password='password8',
+    email='katejackson@gmail.com',
+    image='https://example.com/images/katejackson.png',
+    hobbies='skiing, snowboarding',
+    interests='traveling, languages',
+    radius=30,
+    zip='97531',
+)
+user9 = User(
+    username='danmiller',
+    password='password9',
+    email='danmiller@gmail.com',
+    image='https://example.com/images/danmiller.png',
+    hobbies='playing guitar, writing',
+    interests='music, literature',
+    radius=15,
+    zip='86420',
+)
+user10 = User(
+    username='amandasmith',
+    password='password10',
+    email='amandasmith@gmail.com',
+    image='https://example.com/images/amandasmith.png',
+    hobbies='dancing, painting',
+    interests='art, history',
+    radius=25,
+    zip='73190',
+)
+
+db.session.add_all([user1, user2, user3, user4, user5, user6, user7, user8, user9, user10])
+db.session.commit()
