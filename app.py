@@ -167,8 +167,10 @@ def pic():
     """ Testing
     """
     s3 = boto3.client('s3')
-    print(request.form)
-    pic = request.form["image"]
+    print(request)
+    # breakpoint()
+    print('i am request.data', request.data)
+    pic = request.files['image']
     print("WHAT WE WANT!!!!!",pic)
     username = request.form['username']
 
@@ -176,12 +178,12 @@ def pic():
     # with open(pic, 'rb') as data:
     #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
     # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
-    pic_bytes = io.BytesIO(b'pic')
+    # pic_bytes = io.BytesIO(b'pic')
     s3.upload_fileobj(
-        pic_bytes,
+        pic,
         os.environ['BUCKET'],
         username,
-        ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg', 'ContentEncoding': 'base64'}
+        ExtraArgs={'ACL': 'public-read', 'ContentType': "image/jpeg"}
     )
 
     # TODO: change to base / or something
