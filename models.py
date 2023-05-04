@@ -1,5 +1,10 @@
 """SQLAlchemy models for Friendly."""
 
+from geopy.geocoders import Nominatim
+from geopy.distance import distance
+
+geolocator = Nominatim(user_agent="my_app")
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime
@@ -171,10 +176,59 @@ class User(db.Model):
     def potential_friends(self):
         """Checks tables for potential friend"""
 
-        friend_usernames = [f.username2 for f in Match.query.filter(Match.username1==self.username).all()] + [f.username1 for f in Match.query.filter(Match.username2==self.username).all()]
-        print(friend_usernames)
-        seen_usernames = [f.curr_user for f in Yes_Like.query.filter(Yes_Like.people_who_liked_you==self.username).all()]
-        print(seen_usernames)
+        friend_usernames = (
+            [f.username2 for f in Match.query
+             .filter(Match.username1==self.username)
+                .all()
+            ]) + (
+            [f.username1 for f in Match.query
+             .filter(Match.username2==self.username)
+             .all()])
+        
+        users_who_liked_you = [
+            like.people_who_liked_you for like in Yes_Like.query.filter(
+            Yes_Like.curr_user == self.username,
+            Yes_Like.people_who_liked_you != self.username)
+            .all()
+        ]
+
+        users_who_said_no = [
+            dislike.people_who_said_no for dislike in No_Like.query.filter(
+            No_Like.curr_user == self.username,
+            No_Like.people_who_said_no != self.username)
+            .all()
+        ]
+
+        users = [(u.username, u.zip) for u in User.query.all() 
+                 if u.username != self.username
+                ]
+
+        non_potential_friends = set(friend_usernames + users_who_liked_you + users_who_said_no)
+
+        potential_friends_without_location = [(u[0], u[1]) for u in users if u[0] not in non_potential_friends]
+
+        location = geolocator.geocode({"postalcode": self.zip, "country": "US"})
+        location_of_user = (location.latitude, location.longitude)
+
+#         location1 = (40.7128, -74.0060)  # Example latitude and longitude for location 1
+#           location2 = (40.7306, -73.9352)  # Example latitude and longitude for location 2
+
+# #         Calculate the distance between the two locations using the haversine formula
+#           dist = distance(location1, location2).miles
+
+        # potential_friends_with_location = [(u[0]), ]
+
+        # potential_friends= [user for user in potential_friends_without_location
+        #                     if distance(location_of_user, )
+        # ]
+
+        potenial_friends_with_location = [(u[0], u[geolocator.geocode({"postalcode": u[1], "country": "US"})]) for u in potential_friends_without_location]
+
+        
+        print(potenial_friends_with_location)
+
+
+        # return potential_friends
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):
