@@ -153,17 +153,27 @@ class User(db.Model):
     def __repr__(self):
         return f"<User: {self.username}, {self.email}, {self.likes}>"
 
+    #TODO: Need to finish this method, to find match
     def is_match(self, other_user):
         """ Returns Boolean for match """
         other = Yes_Like.query.filter(Yes_Like.people_who_liked_you == self.username).first()
-        if (other is None or self.likes[0].curr_user is None):
+        print(other)
+        print(self.likes[0].curr_user)
+        if (other is None or self.likes[0].people_who_liked_you != self.username):
             return False
 
-        # print('other people who liked you', other.user[0].people_who_liked_you)
-        print('other people who liked you', other.people_who_liked_you)
-        print('other curr user ', other.curr_user)
+        # print("OTHER.user", other.user.likes[0].curr_user)
+
+        # user = User.query.filter(User.username == other_user).first()
+        # print("self.likes[0].curr_user:", self.likes[0].curr_user )
+
+        # print("other.user.likes[0].people_who_liked_you:", other.user.likes[0].people_who_liked_you)
+
+        #YES_LIKE: from user 10 should be null
+
         # did user1 like user 2
-        if (self.likes[0].curr_user == other_user and other.people_who_liked_you == self.username):
+        # amanda likes john                     
+        if (self.likes[0].curr_user == other_user and other_user == other.user.likes[0].curr_user):
         # did user2 like user1
             return True
         return False
