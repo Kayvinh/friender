@@ -30,6 +30,8 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 toolbar = DebugToolbarExtension(app)
 
+bucket_name = os.environ["BUCKET"]
+
 connect_db(app)
 
 ##############################################################################
@@ -87,17 +89,31 @@ def signup():
 
     if form.validate_on_submit():
         try:
+            s3 = boto3.client('s3')
+            pic = request.files['image']
+            username = request.form['username']
+            print("PIC!!!", pic)
+
+            s3.upload_fileobj(
+                pic,
+                bucket_name,
+                username,
+                ExtraArgs={'ACL': 'public-read', 'ContentType': "image/jpeg"}
+            )
+
             user = User.signup(
                 username=form.username.data,
                 password=form.password.data,
                 email=form.email.data,
-                image=form.image.data or DEFAULT_IMG,
+                image=f'https://{bucket_name}.s3.amazonaws.com/{username}'or DEFAULT_IMG,
                 hobbies=form.hobbies.data,
                 interests=form.interests.data,
                 zip=form.zip.data,
                 friend_radius=form.friend_radius.data
             )
             db.session.commit()
+
+            
 
         except IntegrityError:
             flash("Username already taken", 'danger')
@@ -187,5 +203,5 @@ def pic():
     )
 
     # TODO: change to base / or something
-    return render_template('pic.html')
+    return render_template('base.html')
 
