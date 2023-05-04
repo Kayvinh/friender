@@ -152,19 +152,23 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User: {self.username}, {self.email}, {self.likes}>"
-    
+
     def is_match(self, other_user):
         """ Returns Boolean for match """
-        # found_user_list = [
-        #     user for user in self.likes if user == other_user]
-        # yes_likes = Yes_Like.query.filter_by(people_who_liked_you=other_user).first()
-        # print(yes_likes)
-        print("self username:", self.username)
-        print("checking")
-        
-        found_user_list = [
-            user for user in self.likes if user == other_user]
-        return len(found_user_list) == 1
+        other = Yes_Like.query.filter(Yes_Like.people_who_liked_you == self.username).first()
+        if (other is None or self.likes[0].curr_user is None):
+            return False
+
+        # print('other people who liked you', other.user[0].people_who_liked_you)
+        print('other people who liked you', other.people_who_liked_you)
+        print('other curr user ', other.curr_user)
+        # did user1 like user 2
+        if (self.likes[0].curr_user == other_user and other.people_who_liked_you == self.username):
+        # did user2 like user1
+            return True
+        return False
+
+
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):

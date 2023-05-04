@@ -116,6 +116,7 @@ except:
 like1 = Yes_Like(curr_user="johndoe", people_who_liked_you="janedoe")
 like2 = Yes_Like(curr_user="janedoe", people_who_liked_you="johndoe")
 like3 = Yes_Like(curr_user="johndoe", people_who_liked_you="amandasmith")
+like4 = Yes_Like(curr_user="bobsmith", people_who_liked_you="amandasmith")
 
-db.session.add_all([like1, like2, like3])
+db.session.add_all([like1, like2, like3, like4])
 db.session.commit()
