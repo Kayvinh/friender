@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+  <!-- TODO: resize user image with bootstrap-->
+  <img class="" src="{{ user.image }}">
+</div>
+<div >
+{{ user.username }}
+</div>
+<div >
+{{ user.interests }}
+</div>
+<div >
+{{ user.hobbies }}
+</div>
+<div >
+{{ user.zip }}
+</div>
+
+{% endblock %}

@@ -30,17 +30,17 @@ class Match(db.Model):
         db.ForeignKey('users.username', ondelete="cascade"),
     )
 
-    time_matched = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=datetime.utcnow,
-    )
+    # time_matched = db.Column(
+    #     db.DateTime,
+    #     nullable=False,
+    #     default=datetime.utcnow,
+    # )
 
-    is_curr_match = db.Column(
-        db.Boolean,
-        nullable=False,
-        default=True,
-    )
+    # is_curr_match = db.Column(
+    #     db.Boolean,
+    #     nullable=False,
+    #     default=True,
+    # )
 
 
 class Yes_Like(db.Model):
@@ -162,12 +162,19 @@ class User(db.Model):
         # Check if the other user has liked this user
         other_user_likes = Yes_Like.query.filter(Yes_Like.people_who_liked_you==self.username, Yes_Like.curr_user==other_user).first()
 
-
         # If both users have liked each other, it's a match
         if other_user_likes and self_likes:
             return True
 
         return False
+
+    def potential_friends(self):
+        """Checks tables for potential friend"""
+
+        friend_usernames = [f.username2 for f in Match.query.filter(Match.username1==self.username).all()] + [f.username1 for f in Match.query.filter(Match.username2==self.username).all()]
+        print(friend_usernames)
+        seen_usernames = [f.curr_user for f in Yes_Like.query.filter(Yes_Like.people_who_liked_you==self.username).all()]
+        print(seen_usernames)
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):

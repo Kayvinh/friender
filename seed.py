@@ -1,5 +1,5 @@
 from app import app
-from models import User, db, Yes_Like, No_Like
+from models import User, db, Yes_Like, No_Like, Match
 
 
 db.drop_all()
@@ -118,5 +118,10 @@ like2 = Yes_Like(curr_user="janedoe", people_who_liked_you="johndoe")
 like3 = Yes_Like(curr_user="johndoe", people_who_liked_you="amandasmith")
 like4 = Yes_Like(curr_user="bobsmith", people_who_liked_you="amandasmith")
 
-db.session.add_all([like1, like2, like3, like4])
+match1 = Match(username1='johndoe', username2="janedoe")
+match2 = Match(username1='amandasmith', username2="johndoe")
+
+
+
+db.session.add_all([like1, like2, like3, like4, match1, match2])
 db.session.commit()

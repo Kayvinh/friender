@@ -12,6 +12,7 @@
   <script src="https://unpkg.com/bootstrap"></script>
   <link rel="stylesheet"
         href="https://www.unpkg.com/bootstrap-icons/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/templates/profile.css">
 </head>
 <body>
   {% if not g.user %}
@@ -24,7 +25,7 @@
       <!-- <img src="{{ g.user.image }}" alt="{{ g.user.username }}"> -->
     </a>
   </li>
-
+  <li><a href="/users/{{g.user.username}}">Profile</a></li>
   <li>
     <form method="POST" action="/logout">
       {{ g.csrf_form.hidden_tag() }}

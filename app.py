@@ -113,7 +113,7 @@ def signup():
             )
             db.session.commit()
 
-            
+
 
         except IntegrityError:
             flash("Username already taken", 'danger')
@@ -162,6 +162,17 @@ def logout():
     flash("You have successfully logged out.", 'success')
     return redirect("/login")
 
+@app.get('/users/<username>')
+def show_user(username):
+    """Show user profile."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(username)
+
+    return render_template('users/profile.html', user=user)
 
 
 
@@ -178,30 +189,30 @@ def form():
 
 
 
-@app.route('/pic', methods=["POST"])
-def pic():
-    """ Testing
-    """
-    s3 = boto3.client('s3')
-    print(request)
-    # breakpoint()
-    print('i am request.data', request.data)
-    pic = request.files['image']
-    print("WHAT WE WANT!!!!!",pic)
-    username = request.form['username']
+# @app.route('/pic', methods=["POST"])
+# def pic():
+#     """ Testing
+#     """
+#     s3 = boto3.client('s3')
+#     print(request)
+#     # breakpoint()
+#     print('i am request.data', request.data)
+#     pic = request.files['image']
+#     print("WHAT WE WANT!!!!!",pic)
+#     username = request.form['username']
 
 
-    # with open(pic, 'rb') as data:
-    #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
-    # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
-    # pic_bytes = io.BytesIO(b'pic')
-    s3.upload_fileobj(
-        pic,
-        os.environ['BUCKET'],
-        username,
-        ExtraArgs={'ACL': 'public-read', 'ContentType': "image/jpeg"}
-    )
+#     # with open(pic, 'rb') as data:
+#     #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
+#     # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
+#     # pic_bytes = io.BytesIO(b'pic')
+#     s3.upload_fileobj(
+#         pic,
+#         os.environ['BUCKET'],
+#         username,
+#         ExtraArgs={'ACL': 'public-read', 'ContentType': "image/jpeg"}
+#     )
 
-    # TODO: change to base / or something
-    return render_template('base.html')
+#     # TODO: change to base / or something
+#     return render_template('base.html')
 
