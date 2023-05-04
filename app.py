@@ -35,6 +35,8 @@ connect_db(app)
 ##############################################################################
 # User signup/login/logout
 
+# test authentication in begining like warbler
+# middleware tests authorization
 
 @app.before_request
 def add_user_to_g():
