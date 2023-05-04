@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-from models import connect_db, User, Yes_Like
+from models import connect_db, User, Yes_Like, DEFAULT_IMG, db
 from forms import SignUpForm, CSRFProtectForm, LoginForm
 
 load_dotenv()
@@ -53,13 +53,13 @@ def add_user_to_g():
 def add_csrf_only_form():
     """Add a CSRF-only form so that every route can use it."""
 
-    g.csrf_form = CSRFProtection()
+    g.csrf_form = CSRFProtectForm()
 
 
 def do_login(user):
     """Log in user."""
 
-    session[CURR_USER_KEY] = user.id
+    session[CURR_USER_KEY] = user.username
 
 
 def do_logout():
@@ -67,6 +67,86 @@ def do_logout():
 
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
+
+
+
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    """Handle user signup.
+
+    Create new user and add to DB. Redirect to home page.
+
+    If form not valid, present form.
+
+    If the there already is a user with that username: flash message
+    and re-present form.
+    """
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+    form = SignUpForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                image=form.image.data or DEFAULT_IMG,
+                hobbies=form.hobbies.data,
+                interests=form.interests.data,
+                zip=form.zip.data,
+                friend_radius=form.friend_radius.data
+            )
+            db.session.commit()
+
+        except IntegrityError:
+            flash("Username already taken", 'danger')
+            return render_template('users/signup.html', form=form)
+
+        do_login(user)
+
+        return redirect("/")
+
+    else:
+        return render_template('users/signup.html', form=form)
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """Handle user login and redirect to homepage on success."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(
+            form.username.data,
+            form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/")
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('users/login.html', form=form)
+
+
+@app.post('/logout')
+def logout():
+    """Handle logout of user and redirect to homepage."""
+
+    form = g.csrf_form
+
+    if not form.validate_on_submit() or not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    do_logout()
+
+    flash("You have successfully logged out.", 'success')
+    return redirect("/login")
+
+
 
 
 @app.route('/', methods=["GET"])
@@ -80,6 +160,8 @@ def form():
 
     return render_template('base.html', form=form)
 
+
+
 @app.route('/pic', methods=["POST"])
 def pic():
     """ Testing
@@ -88,13 +170,20 @@ def pic():
     print(request.form)
     pic = request.form["image"]
     print("WHAT WE WANT!!!!!",pic)
+    username = request.form['username']
 
 
     # with open(pic, 'rb') as data:
     #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
     # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
     pic_bytes = io.BytesIO(b'pic')
-    s3.upload_fileobj(pic_bytes, os.environ['BUCKET'], 'pic2' )
+    s3.upload_fileobj(
+        pic_bytes,
+        os.environ['BUCKET'],
+        username,
+        ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg', 'ContentEncoding': 'base64'}
+    )
 
+    # TODO: change to base / or something
     return render_template('pic.html')
 

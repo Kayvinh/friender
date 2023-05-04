@@ -76,7 +76,7 @@ class No_Like(db.Model):
         autoincrement=True,
         primary_key=True,
     )
-    # TODO: user
+
     curr_user = db.Column(
         db.Text,
         db.ForeignKey('users.username', ondelete="cascade"),

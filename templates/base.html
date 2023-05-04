@@ -5,19 +5,36 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/bootstrap@5/dist/css/bootstrap.css">
+  <script src="https://unpkg.com/jquery"></script>
+  <script src="https://unpkg.com/bootstrap"></script>
+  <link rel="stylesheet"
+        href="https://www.unpkg.com/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
-    <form method="POST" id="user_form" action="/pic">
-        {{ form.hidden_tag() }}
+  {% if not g.user %}
+  <li><a href="/signup">Sign up</a></li>
+  <li><a href="/login">Log in</a></li>
+{% else %}
+  <li>
+    <a href="/users/{{ g.user.username }}">
+      <!-- TODO: when we get image, reenable -->
+      <!-- <img src="{{ g.user.image }}" alt="{{ g.user.username }}"> -->
+    </a>
+  </li>
 
-        {% for field in form if field.widget.input_type != 'hidden' %}
-          {% for error in field.errors %}
-            <span class="text-danger">{{ error }}</span>
-          {% endfor %}
-          {{ field(placeholder=field.label.text, class="form-control") }}
-        {% endfor %}
-
-        <button class="btn btn-primary btn-lg">Submit</button>
-      </form>
+  <li>
+    <form method="POST" action="/logout">
+      {{ g.csrf_form.hidden_tag() }}
+      <button class="btn btn-link">Log out</button>
+    </form>
+  <li>
+{% endif %}
+<div>
+  {% block content %}
+  {% endblock %}
+</div>
 </body>
 </html>

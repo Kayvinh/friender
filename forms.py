@@ -37,7 +37,9 @@ class SignUpForm(FlaskForm):
     )
 
     friend_radius = SelectField(
-        'radius',
+        'Friend Radius',
+        choices=[(1, '1 mile'), (5, '5 miles'), (10, '10 miles')],
+        coerce=int,
         validators=[DataRequired()],
     )
 
