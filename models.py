@@ -156,27 +156,39 @@ class User(db.Model):
     #TODO: Need to finish this method, to find match
     def is_match(self, other_user):
         """ Returns Boolean for match """
-        other = Yes_Like.query.filter(Yes_Like.people_who_liked_you == self.username).first()
-        print(other)
-        print(self.likes[0].curr_user)
-        if (other is None or self.likes[0].people_who_liked_you != self.username):
-            return False
 
-        # print("OTHER.user", other.user.likes[0].curr_user)
+        # Check if the other user has liked this user
+        other_user_likes = Yes_Like.query.filter_by(people_who_liked_you=self.username, curr_user=other_user).first()
 
-        # user = User.query.filter(User.username == other_user).first()
-        # print("self.likes[0].curr_user:", self.likes[0].curr_user )
+        # Check if this user has liked the other user
+        self_likes = Yes_Like.query.filter_by(people_who_liked_you=other_user, curr_user=self.username).first()
 
-        # print("other.user.likes[0].people_who_liked_you:", other.user.likes[0].people_who_liked_you)
-
-        #YES_LIKE: from user 10 should be null
-
-        # did user1 like user 2
-        # amanda likes john                     
-        if (self.likes[0].curr_user == other_user and other_user == other.user.likes[0].curr_user):
-        # did user2 like user1
+    # If both users have liked each other, it's a match
+        if other_user_likes and self_likes:
             return True
+
         return False
+        # other = Yes_Like.query.filter(Yes_Like.people_who_liked_you == self.username).first()
+        # print(other)
+        # print(self.likes[0].curr_user)
+        # if (other is None or self.likes[0].people_who_liked_you != self.username):
+        #     return False
+
+        # # print("OTHER.user", other.user.likes[0].curr_user)
+
+        # # user = User.query.filter(User.username == other_user).first()
+        # # print("self.likes[0].curr_user:", self.likes[0].curr_user )
+
+        # # print("other.user.likes[0].people_who_liked_you:", other.user.likes[0].people_who_liked_you)
+
+        # #YES_LIKE: from user 10 should be null
+
+        # # did user1 like user 2
+        # # amanda likes john                     
+        # if (self.likes[0].curr_user == other_user and other_user == other.user.likes[0].curr_user):
+        # # did user2 like user1
+        #     return True
+        # return False
 
 
 
