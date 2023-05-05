@@ -184,6 +184,7 @@ def find_friends():
         return redirect("/")
 
     potential_friends = g.user.potential_friends()
+    print(potential_friends)
     friend = random.choice(potential_friends)
     user = User.query.get_or_404(friend)
     print(user)
