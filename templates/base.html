@@ -41,8 +41,13 @@
 
   <div class="home-container">
     <div class="container text-center">
+
       {% block content %}
+      {% if user %}
       Welcome home, {{user.username}}
+      {% else %}
+      Welcome home!
+      {% endif %}
       {% endblock %}
     </div>
   </div>

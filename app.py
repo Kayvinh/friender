@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-from models import connect_db, User, Yes_Like, DEFAULT_IMG, db
+from models import connect_db, User, Yes_Like, DEFAULT_IMG, db, No_Like, Match
 from forms import SignUpForm, CSRFProtectForm, LoginForm
 
 load_dotenv()
@@ -33,6 +33,20 @@ toolbar = DebugToolbarExtension(app)
 bucket_name = os.environ["BUCKET"]
 
 connect_db(app)
+
+def thumbs_up(user):
+    Yes_Like(curr_user=user, people_who_liked_you=g.user.username)
+
+    is_match = g.user.is_match(user)
+    if is_match:
+        Match(username1=user, username2=g.user.username)
+
+    db.session.commit()
+
+
+def thumbs_down(user):
+    No_Like(curr_user=user, people_who_said_no=g.user.username)
+    db.session.commit()
 
 ##############################################################################
 # User signup/login/logout
@@ -184,11 +198,24 @@ def find_friends():
         return redirect("/")
 
     potential_friends = g.user.potential_friends()
-    print(potential_friends)
     friend = random.choice(potential_friends)
     user = User.query.get_or_404(friend)
-    print(user)
-    return render_template('potential.html', user=user)
+
+    # def thumbs_up():
+    #     Yes_Like(curr_user=user, people_who_liked_you=g.user.username)
+    #     is_match = user.is_match(g.user.username)
+    #     if is_match:
+    #         Match(username1=user, username2=g.user.username)
+
+    #     db.session.commit()
+    #     return
+
+    # def thumbs_down():
+    #     No_Like(curr_user=user, people_who_said_no=g.user.username)
+    #     db.session.commit()
+    #     return
+
+    return render_template('potential.html', user=user, thumbs_up=thumbs_up, thumbs_down=thumbs_down)
 
 
 @app.route('/', methods=["GET"])
@@ -200,31 +227,4 @@ def form():
     return render_template('base.html', user=g.user)
 
 
-
-# @app.route('/pic', methods=["POST"])
-# def pic():
-#     """ Testing
-#     """
-#     s3 = boto3.client('s3')
-#     print(request)
-#     # breakpoint()
-#     print('i am request.data', request.data)
-#     pic = request.files['image']
-#     print("WHAT WE WANT!!!!!",pic)
-#     username = request.form['username']
-
-
-#     # with open(pic, 'rb') as data:
-#     #     s3.upload_fileobj(data, os.environ['BUCKET'], 'username-pic1')
-#     # s3.upload_file(file_path, os.environ['BUCKET'], 'pic1')
-#     # pic_bytes = io.BytesIO(b'pic')
-#     s3.upload_fileobj(
-#         pic,
-#         os.environ['BUCKET'],
-#         username,
-#         ExtraArgs={'ACL': 'public-read', 'ContentType': "image/jpeg"}
-#     )
-
-#     # TODO: change to base / or something
-#     return render_template('base.html')
 
