@@ -8,13 +8,13 @@ block content %}
     <div class="card-text">{{ user.interest }}</div>
   </div>
   <!-- TODO: inline styles -->
-    <form method="POST"  action="/findfriends">
-      <button onclick="{{ thumbs_up('{{ user }}') }}"><i class="bi bi-hand-thumbs-up"></i></button>
+    <form method="POST"  action="/users/thumbs_up/{{ user.username }}">
+      <button><i class="bi bi-hand-thumbs-up"></i></button>
     </form>
 
 
-    <form method="POST"  action="/findfriends">
-      <button  onclick="{{ thumbs_down('{{ user }}') }}"><i class="bi bi-hand-thumbs-down"></i></button>
+    <form method="POST"  action="/users/thumbs_down/{{ user.username }}">
+      <button><i class="bi bi-hand-thumbs-down"></i></button>
     </form>
 
 </div>

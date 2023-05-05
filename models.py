@@ -74,7 +74,7 @@ class Yes_Like(db.Model):
 class No_Like(db.Model):
     """Connection of a liker <-> liked user."""
 
-    __tablename__ = 'No_likes'
+    __tablename__ = 'no_likes'
 
     id = db.Column(
         db.Integer,
@@ -189,15 +189,15 @@ class User(db.Model):
         # Filters out people who have already liked you
         users_who_liked_you = [
             like.people_who_liked_you for like in Yes_Like.query.filter(
-            Yes_Like.curr_user == self.username,
-            Yes_Like.people_who_liked_you != self.username)
+            Yes_Like.people_who_liked_you == self.username,
+            Yes_Like.curr_user != self.username)
             .all()
         ]
         # Filters out people who have already said no
         users_who_said_no = [
             dislike.people_who_said_no for dislike in No_Like.query.filter(
-            No_Like.curr_user == self.username,
-            No_Like.people_who_said_no != self.username)
+            No_Like.people_who_said_no == self.username,
+            No_Like.curr_user != self.username)
             .all()
         ]
         # Grabs every user without your username

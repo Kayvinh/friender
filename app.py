@@ -34,19 +34,6 @@ bucket_name = os.environ["BUCKET"]
 
 connect_db(app)
 
-def thumbs_up(user):
-    Yes_Like(curr_user=user, people_who_liked_you=g.user.username)
-
-    is_match = g.user.is_match(user)
-    if is_match:
-        Match(username1=user, username2=g.user.username)
-
-    db.session.commit()
-
-
-def thumbs_down(user):
-    No_Like(curr_user=user, people_who_said_no=g.user.username)
-    db.session.commit()
 
 ##############################################################################
 # User signup/login/logout
@@ -176,7 +163,7 @@ def logout():
     flash("You have successfully logged out.", 'success')
     return redirect("/login")
 
-@app.get('/users/<username>')
+@app.route('/users/<username>', methods=["GET", "POST"])
 def show_user(username):
     """Show user profile."""
 
@@ -201,30 +188,42 @@ def find_friends():
     friend = random.choice(potential_friends)
     user = User.query.get_or_404(friend)
 
-    # def thumbs_up():
-    #     Yes_Like(curr_user=user, people_who_liked_you=g.user.username)
-    #     is_match = user.is_match(g.user.username)
-    #     if is_match:
-    #         Match(username1=user, username2=g.user.username)
 
-    #     db.session.commit()
-    #     return
+    return render_template('potential.html', user=user)
 
-    # def thumbs_down():
-    #     No_Like(curr_user=user, people_who_said_no=g.user.username)
-    #     db.session.commit()
-    #     return
+@app.route('/users/thumbs_up/<username>', methods=["GET", "POST"])
+def thumbs_up(username):
+    """ View thumbs up potential friend """
 
-    return render_template('potential.html', user=user, thumbs_up=thumbs_up, thumbs_down=thumbs_down)
+    user = User.query.get_or_404(username)
+
+    yes = Yes_Like(curr_user=user.username, people_who_liked_you=g.user.username)
+    is_match = user.is_match(g.user.username)
+    if is_match:
+        match = Match(username1=user.username, username2=g.user.username)
+        db.session.add_all([yes, match])
+
+    db.session.commit()
+
+    return redirect('/findfriends')
+
+@app.route('/users/thumbs_down/<username>', methods=["GET", "POST"])
+def thumbs_down(username):
+    """ View thumbs down potential friend """
+
+    user = User.query.get_or_404(username)
+    print(" user!!!", user)
+    print("username!!!", username)
+    no = No_Like(curr_user=user.username, people_who_said_no=g.user.username)
+    db.session.add(no)
+    db.session.commit()
+
+    return redirect('/findfriends')
 
 
 @app.route('/', methods=["GET"])
 def form():
-    """ Testing
-    """
+    """ Homepage """
 
 
     return render_template('base.html', user=g.user)
-
-
-
