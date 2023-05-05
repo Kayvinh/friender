@@ -2,7 +2,7 @@ import os
 import io
 import boto3
 from dotenv import load_dotenv
-
+import random
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
@@ -174,6 +174,20 @@ def show_user(username):
 
     return render_template('users/profile.html', user=user)
 
+
+@app.route('/findfriends', methods=["GET", "POST"])
+def find_friends():
+    """Show potential friends."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    potential_friends = g.user.potential_friends()
+    friend = random.choice(potential_friends)
+    user = User.query.get_or_404(friend)
+    print(user)
+    return render_template('potential.html', user=user)
 
 
 @app.route('/', methods=["GET"])

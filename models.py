@@ -174,8 +174,9 @@ class User(db.Model):
         return False
 
     def potential_friends(self):
-        """Checks tables for potential friend"""
+        """Returns array of potential friends within friend radius """
 
+        # filter friends if they have already been matched
         friend_usernames = (
             [f.username2 for f in Match.query
              .filter(Match.username1==self.username)
@@ -184,51 +185,44 @@ class User(db.Model):
             [f.username1 for f in Match.query
              .filter(Match.username2==self.username)
              .all()])
-        
+
+        # Filters out people who have already liked you
         users_who_liked_you = [
             like.people_who_liked_you for like in Yes_Like.query.filter(
             Yes_Like.curr_user == self.username,
             Yes_Like.people_who_liked_you != self.username)
             .all()
         ]
-
+        # Filters out people who have already said no
         users_who_said_no = [
             dislike.people_who_said_no for dislike in No_Like.query.filter(
             No_Like.curr_user == self.username,
             No_Like.people_who_said_no != self.username)
             .all()
         ]
-
-        users = [(u.username, u.zip) for u in User.query.all() 
+        # Grabs every user without your username
+        users = [(u.username, u.zip) for u in User.query.all()
                  if u.username != self.username
                 ]
-
+        # Combines the previous lists with no duplicate values
         non_potential_friends = set(friend_usernames + users_who_liked_you + users_who_said_no)
 
+        # Creates tuple of username and zip of all people not filtered out
         potential_friends_without_location = [(u[0], u[1]) for u in users if u[0] not in non_potential_friends]
 
+        # Own users location
         location = geolocator.geocode({"postalcode": self.zip, "country": "US"})
         location_of_user = (location.latitude, location.longitude)
 
-#         location1 = (40.7128, -74.0060)  # Example latitude and longitude for location 1
-#           location2 = (40.7306, -73.9352)  # Example latitude and longitude for location 2
+        # List of potential friends now filtered by location
+        potential_friends_with_location = []
+        for user in potential_friends_without_location:
+            location = geolocator.geocode({"postalcode": user[1], "country": "US"})
+            location_of_other_user = (location.latitude, location.longitude)
+            if (distance(location_of_user, location_of_other_user).miles <= self.friend_radius):
+                potential_friends_with_location.append(user[0])
 
-# #         Calculate the distance between the two locations using the haversine formula
-#           dist = distance(location1, location2).miles
-
-        # potential_friends_with_location = [(u[0]), ]
-
-        # potential_friends= [user for user in potential_friends_without_location
-        #                     if distance(location_of_user, )
-        # ]
-
-        potenial_friends_with_location = [(u[0], u[geolocator.geocode({"postalcode": u[1], "country": "US"})]) for u in potential_friends_without_location]
-
-        
-        print(potenial_friends_with_location)
-
-
-        # return potential_friends
+        return potential_friends_with_location
 
     @classmethod
     def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):

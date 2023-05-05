@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block body_class %}onboarding{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div>
+    {{ user.username }}
+  </div>
+  <div>
+    {{ user.hobbies }}
+  </div>
+  <div>
+    {{ user.interest }}
+  </div>
+  <div>
+    <img src="{{ user.image }}" alt="{{user.username}}">
+  </div>
+</div>
+
+
+
+
+<a href="/findfriends">
+  <div>
+    <button>Show me another potential friend</button>
+  </div>
+</a>
+
+{% endblock %}

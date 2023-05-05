@@ -23,7 +23,7 @@ user2 = User(
     hobbies='swimming, traveling',
     interests='photography, art',
     friend_radius=20,
-    zip='54321',
+    zip='94080',
 )
 user3 = User(
     username='bobsmith',
@@ -33,7 +33,7 @@ user3 = User(
     hobbies='fishing, playing guitar',
     interests='music, technology',
     friend_radius=15,
-    zip='67890',
+    zip='94080',
 )
 user4 = User(
     username='sarahjones',
@@ -43,7 +43,7 @@ user4 = User(
     hobbies='yoga, cooking',
     interests='health, nutrition',
     friend_radius=25,
-    zip='09876',
+    zip='94080',
 )
 user5 = User(
     username='miketurner',
@@ -53,7 +53,7 @@ user5 = User(
     hobbies='running, playing basketball',
     interests='sports, movies',
     friend_radius=30,
-    zip='43210',
+    zip='94080',
 )
 user6 = User(
     username='lisasmith',
