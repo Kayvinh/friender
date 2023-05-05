@@ -12,30 +12,40 @@
   <script src="https://unpkg.com/bootstrap"></script>
   <link rel="stylesheet"
         href="https://www.unpkg.com/bootstrap-icons/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="/templates/profile.css">
+  <link rel="stylesheet" href="/static/stylesheets/style.css">
 </head>
 <body>
-  {% if not g.user %}
-  <li><a href="/signup">Sign up</a></li>
-  <li><a href="/login">Log in</a></li>
-{% else %}
-  <li>
-    <!-- <a href="/users/{{ g.user.username }}"> -->
-      <!-- TODO: when we get image, reenable -->
-      <!-- <img src="{{ g.user.image }}" alt="{{ g.user.username }}"> -->
-    </a>
-  </li>
-  <li><a href="/users/{{g.user.username}}">Profile</a></li>
-  <li>
-    <form method="POST" action="/logout">
-      {{ g.csrf_form.hidden_tag() }}
-      <button class="btn btn-link">Log out</button>
-    </form>
-  <li>
-{% endif %}
-<div>
-  {% block content %}
-  {% endblock %}
-</div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    </nav>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Friender</a>
+          <ul class="navbar-nav ms-auto">
+            {% if not g.user %}
+              <li><a href="/signup">Sign up</a></li>
+              <li><a href="/login">Log in</a></li>
+            {% else %}
+              <li class="nav-item me-4"><a href="/users/{{g.user.username}}">Profile</a></li>
+              <li class="nav-item me-4"><a href="/findfriends">Find Friends</a></li>
+              <li class="nav-item me-4">
+                <form method="POST" action="/logout">
+                  {{ g.csrf_form.hidden_tag() }}
+                  <button class="btn btn-link">Log out</button>
+                </form>
+              <li>
+          </ul>
+    </div>
+  </nav>
+
+  {% endif %}
+
+
+  <div class="home-container">
+    <div class="container text-center">
+      {% block content %}
+      Welcome home, {{user.username}}
+      {% endblock %}
+    </div>
+  </div>
+
 </body>
 </html>

@@ -196,11 +196,8 @@ def form():
     """ Testing
     """
 
-    form = SignUpForm()
-    for bucket in s3.buckets.all():
-        print(bucket.name)
 
-    return render_template('base.html', form=form)
+    return render_template('base.html', user=g.user)
 
 
 

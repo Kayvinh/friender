@@ -1,21 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div>
-  <!-- TODO: resize user image with bootstrap-->
-  <img class="" src="{{ user.image }}">
+<div class="card" style="width: 18rem;">
+  <img class="card-img-top" src="{{ user.image }}" alt="{{user.username}}" />
+  <div class="card-body">
+    <div class="card-title">{{ user.username }}</div>
+    <div class="card-text">{{ user.hobbies }}</div>
+    <div class="card-text">{{ user.interest }}</div>
+  </div>
 </div>
-<div >
-{{ user.username }}
-</div>
-<div >
-{{ user.interests }}
-</div>
-<div >
-{{ user.hobbies }}
-</div>
-<div >
-{{ user.zip }}
-</div>
+
 
 {% endblock %}

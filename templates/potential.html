@@ -1,19 +1,18 @@
 {% extends 'base.html' %} {% block body_class %}onboarding{% endblock %} {%
 block content %}
-<div class="card">
+<div class="card" style="width: 18rem;">
+  <img class="card-img-top" src="{{ user.image }}" alt="{{user.username}}" />
   <div class="card-body">
-    <div>{{ user.username }}</div>
-    <div>{{ user.hobbies }}</div>
-    <div>{{ user.interest }}</div>
-    <div>
-      <img src="{{ user.image }}" alt="{{user.username}}" />
-    </div>
+    <div class="card-title">{{ user.username }}</div>
+    <div class="card-text">{{ user.hobbies }}</div>
+    <div class="card-text">{{ user.interest }}</div>
   </div>
 </div>
 
+
 <a href="/findfriends">
   <div>
-    <button>Show me another potential friend</button>
+    <button class="btn btn-primary">Match with another!</button>
   </div>
 </a>
 
