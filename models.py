@@ -16,7 +16,8 @@ bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 class Match(db.Model):
-    """"""
+    """Table for matches"""
+
     __tablename__ = 'matches'
 
     id = db.Column(
@@ -49,7 +50,7 @@ class Match(db.Model):
 
 
 class Yes_Like(db.Model):
-    """Connection of a liker <-> liked user."""
+    """Table of a liker <-> liked user."""
 
     __tablename__ = 'yes_likes'
 
@@ -70,9 +71,8 @@ class Yes_Like(db.Model):
     )
 
 
-
 class No_Like(db.Model):
-    """Connection of a liker <-> liked user."""
+    """Table of a liker <-> not liked user."""
 
     __tablename__ = 'no_likes'
 
@@ -95,7 +95,8 @@ class No_Like(db.Model):
 
 
 class User(db.Model):
-    """User in the system."""
+    """User in the system.
+    Contains methods for checking for potential friends and matches"""
 
     __tablename__ = 'users'
 
@@ -142,13 +143,6 @@ class User(db.Model):
         nullable=False,
     )
 
-    # def potential_friends(self):
-        # get usernames of people were already friends with
-        # filter people we've seen, radius
-
-        # return that list
-
-
     likes = db.relationship(
         "Yes_Like",
         primaryjoin=(Yes_Like.people_who_liked_you == username),
@@ -162,10 +156,14 @@ class User(db.Model):
         """ Returns Boolean for match """
 
         # Check if this user has liked the other user
-        self_likes = Yes_Like.query.filter(Yes_Like.people_who_liked_you==other_user, Yes_Like.curr_user==self.username).first()
+        self_likes = Yes_Like.query.filter(
+            Yes_Like.people_who_liked_you==other_user,
+            Yes_Like.curr_user==self.username).first()
 
         # Check if the other user has liked this user
-        other_user_likes = Yes_Like.query.filter(Yes_Like.people_who_liked_you==self.username, Yes_Like.curr_user==other_user).first()
+        other_user_likes = Yes_Like.query.filter(
+            Yes_Like.people_who_liked_you==self.username,
+            Yes_Like.curr_user==other_user).first()
 
         # If both users have liked each other, it's a match
         if other_user_likes and self_likes:
@@ -174,7 +172,10 @@ class User(db.Model):
         return False
 
     def potential_friends(self):
-        """Returns array of potential friends within friend radius """
+        """Returns array of potential friends within friend radius
+        TODO: Probable bug:
+            Might need to call potential_friends again for the filters to
+            work correctly"""
 
         # filter friends if they have already been matched
         friend_usernames = (
@@ -216,19 +217,31 @@ class User(db.Model):
 
         # List of potential friends now filtered by location
         potential_friends_with_location = []
+
         for user in potential_friends_without_location:
             location = geolocator.geocode({"postalcode": user[1], "country": "US"})
             location_of_other_user = (location.latitude, location.longitude)
+
             if (distance(location_of_user, location_of_other_user).miles <= self.friend_radius):
                 potential_friends_with_location.append(user[0])
 
         return potential_friends_with_location
 
     @classmethod
-    def signup(cls, username, email, password, hobbies, interests, zip, friend_radius, image=DEFAULT_IMG):
+    def signup(
+        cls,
+        username,
+        email,
+        password,
+        hobbies,
+        interests,
+        zip,
+        friend_radius,
+        image=DEFAULT_IMG
+        ):
         """Sign up user.
 
-        Hashes password and adds user to system.
+        Hashes password and adds user to db.
         """
 
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
@@ -251,7 +264,6 @@ class User(db.Model):
     def authenticate(cls, username, password):
         """Find user with `username` and `password`.
 
-        This is a class method (call it on the class, not an individual user.)
         It searches for a user whose password hash matches this password
         and, if it finds such a user, returns that user object.
 
@@ -268,50 +280,7 @@ class User(db.Model):
 
         return False
 
-    # def is_followed_by(self, other_user):
-    #     """Is this user followed by `other_user`?"""
-
-    #     found_user_list = [
-    #         user for user in self.followers if user == other_user]
-    #     return len(found_user_list) == 1
-
-    # def is_following(self, other_user):
-    #     """Is this user following `other_use`?"""
-
-    #     found_user_list = [
-    #         user for user in self.following if user == other_user]
-    #     return len(found_user_list) == 1
-
-
-# class Message(db.Model):
-#     """An individual message ("warble").
-
-#     Message -> who liked it, backref="liked_by"
-#     """
-
-#     __tablename__ = 'messages'
-
-#     id = db.Column(
-#         db.Integer,
-#         primary_key=True,
-#     )
-
-#     text = db.Column(
-#         db.String(140),
-#         nullable=False,
-#     )
-
-#     timestamp = db.Column(
-#         db.DateTime,
-#         nullable=False,
-#         default=datetime.utcnow,
-#     )
-
-#     user_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('users.id', ondelete='CASCADE'),
-#         nullable=False,
-#     )
+# TODO: Add message model
 
 def connect_db(app):
     """Connect this database to provided Flask app.

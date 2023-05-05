@@ -38,9 +38,6 @@ connect_db(app)
 ##############################################################################
 # User signup/login/logout
 
-# test authentication in begining like warbler
-# middleware tests authorization
-
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
@@ -79,7 +76,7 @@ def signup():
 
     Create new user and add to DB. Redirect to home page.
 
-    If form not valid, present form.
+    If form not valid, re-present form.
 
     If the there already is a user with that username: flash message
     and re-present form.
@@ -93,7 +90,6 @@ def signup():
             s3 = boto3.client('s3')
             pic = request.files['image']
             username = request.form['username']
-            print("PIC!!!", pic)
 
             s3.upload_fileobj(
                 pic,
@@ -114,22 +110,21 @@ def signup():
             )
             db.session.commit()
 
-
-
         except IntegrityError:
             flash("Username already taken", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
 
-        return redirect("/")
+        return redirect(f"/users/{username}")
 
     else:
         return render_template('users/signup.html', form=form)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    """Handle user login and redirect to homepage on success."""
+    """Handle user login and redirect to homepage on success.
+    Flash message on invalid credentials and return to login form"""
 
     form = LoginForm()
 
@@ -178,7 +173,7 @@ def show_user(username):
 
 @app.route('/findfriends', methods=["GET", "POST"])
 def find_friends():
-    """Show potential friends."""
+    """Show potential friends one at a time."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -188,12 +183,16 @@ def find_friends():
     friend = random.choice(potential_friends)
     user = User.query.get_or_404(friend)
 
-
     return render_template('potential.html', user=user)
+
 
 @app.route('/users/thumbs_up/<username>', methods=["GET", "POST"])
 def thumbs_up(username):
-    """ View thumbs up potential friend """
+    """ Handle thumbs up potential friend, redirect back to findfriends """
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     user = User.query.get_or_404(username)
 
@@ -209,12 +208,15 @@ def thumbs_up(username):
 
 @app.route('/users/thumbs_down/<username>', methods=["GET", "POST"])
 def thumbs_down(username):
-    """ View thumbs down potential friend """
+    """ Handle thumbs down potential friend, redirect back to findfriends """
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     user = User.query.get_or_404(username)
-    print(" user!!!", user)
-    print("username!!!", username)
     no = No_Like(curr_user=user.username, people_who_said_no=g.user.username)
+
     db.session.add(no)
     db.session.commit()
 

@@ -42,14 +42,17 @@
   <div class="home-container">
     <div class="container text-center">
 
-      {% block content %}
+    {% block content %}
       {% if user %}
-      Welcome home, {{user.username}}
+        Welcome home, {{user.username}}
       {% else %}
-      Welcome home!
+        Welcome to Friender!
       {% endif %}
-      {% endblock %}
+    {% endblock %}
     </div>
+    {% for msg in get_flashed_messages() %}
+      <p>{{ msg }}</p>
+    {% endfor %}
   </div>
 
 </body>
